@@ -1,0 +1,1519 @@
+/**
+ * Mobile Responsive Tables & Filters
+ * Shared styles for GridView mobile adaptations
+ */
+
+/* ========================================
+   MOBILE SIDEBAR FIX (AdminLTE)
+   ======================================== */
+
+/* Hide sidebar menu on desktop - show only on mobile */
+@media screen and (min-width: 992px) {
+    .sidebar-menu-mobile {
+        display: none !important;
+    }
+
+    .main-sidebar {
+        width: 4.6rem !important;
+    }
+
+    /* Hide hamburger menu button on desktop */
+    .navbar-nav .nav-link[data-widget="pushmenu"] {
+        display: none !important;
+    }
+
+    /* Hide sidebar close button on desktop */
+    .sidebar-close-btn {
+        display: none !important;
+    }
+}
+
+@media screen and (max-width: 991.98px) {
+    /* Ensure sidebar works correctly on mobile */
+    .main-sidebar {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 250px !important;
+        z-index: 1038 !important;
+        margin-left: -250px;
+        transition: margin-left 0.3s ease-in-out;
+    }
+
+    /* When sidebar is open (pushmenu adds this class) */
+    body.sidebar-open .main-sidebar {
+        margin-left: 0 !important;
+    }
+
+    /* Backdrop for mobile sidebar */
+    body.sidebar-open::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 1037;
+        animation: fadeIn 0.3s;
+    }
+
+    /* Prevent body scroll when sidebar is open */
+    body.sidebar-open {
+        overflow: hidden;
+    }
+
+    /* Content should not have left margin on mobile */
+    .content-wrapper,
+    .main-footer {
+        margin-left: 0 !important;
+    }
+
+    /* Mobile sidebar close button */
+    .sidebar-close-btn {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 7px;
+        right: 7px;
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: 50%;
+        color: #c2c7d0;
+        font-size: 24px;
+        cursor: pointer;
+        z-index: 1040;
+        transition: all 0.2s;
+        line-height: 1;
+        padding: 0;
+    }
+
+    .sidebar-close-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+    }
+
+    .sidebar-close-btn:active {
+        transform: scale(0.95);
+    }
+
+    .sidebar-close-btn span{
+        padding: 18px 13px 18px 30px;
+        margin-right: 17px;
+    }
+
+    /* Sidebar menu styling for mobile - NO ICONS, FULL WIDTH */
+    .main-sidebar .nav-sidebar {
+        padding-top: 10px;
+    }
+
+    .main-sidebar .nav-sidebar .nav-item {
+        margin-bottom: 0;
+        width: 100%;
+    }
+
+    .main-sidebar .nav-sidebar .nav-link {
+        padding: 15px 20px;
+        color: #c2c7d0;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        width: 100% !important;
+        white-space: nowrap;
+    }
+
+    .main-sidebar .nav-sidebar .nav-link:hover {
+        background-color: rgba(255,255,255,0.1);
+        color: #fff;
+    }
+
+    .main-sidebar .nav-sidebar .nav-link p {
+        margin: 0;
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Override AdminLTE collapsed sidebar styles on mobile */
+    body.sidebar-collapse .main-sidebar .nav-sidebar .nav-link,
+    body.sidebar-mini.sidebar-collapse .main-sidebar .nav-sidebar .nav-link {
+        width: 100% !important;
+    }
+
+    body.sidebar-collapse .main-sidebar .nav-sidebar .nav-link p,
+    body.sidebar-mini.sidebar-collapse .main-sidebar .nav-sidebar .nav-link p {
+        display: block !important;
+        white-space: nowrap;
+    }
+}
+
+/* Mobile filter button - hidden on desktop */
+.mobile-filter-btn {
+    display: none;
+}
+
+/* Offcanvas filter panel */
+.offcanvas-filter {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 85%;
+    max-width: 400px;
+    height: 100%;
+    background-color: #fff;
+    box-shadow: -2px 0 8px rgba(0,0,0,0.15);
+    z-index: 9999;
+    transition: right 0.3s ease-in-out;
+    overflow-y: auto;
+}
+
+.offcanvas-filter.show {
+    right: 0;
+}
+
+.offcanvas-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 9998;
+    display: none;
+    animation: fadeIn 0.3s;
+}
+
+.offcanvas-backdrop.show {
+    display: block;
+}
+
+.offcanvas-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+}
+
+.offcanvas-header h3 {
+    margin: 0;
+    font-size: 1.5em;
+    color: #333;
+}
+
+.offcanvas-close {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.offcanvas-close:hover {
+    color: #000;
+}
+
+.offcanvas-body {
+    padding: 20px;
+}
+
+.offcanvas-filter-group {
+    margin-bottom: 20px;
+}
+
+.offcanvas-filter-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #495057;
+    font-size: 14px;
+}
+
+.offcanvas-filter-group input,
+.offcanvas-filter-group select {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: #fff;
+    display: block !important;
+}
+
+.offcanvas-filter-group select {
+    height: auto;
+    appearance: auto;
+}
+
+.offcanvas-footer {
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    padding: 20px;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.offcanvas-footer button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-apply-filters {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-apply-filters:hover {
+    background-color: #218838;
+}
+
+.btn-reset-filters {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-reset-filters:hover {
+    background-color: #5a6268;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Action details specific styles (from Companies page) */
+.action-details {
+    display: none;
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    margin: 10px 0;
+    border-left: 3px solid #6c757d;
+}
+
+.company-tabs .nav-tabs,
+.company-info-section,
+.company-actions {
+    margin-bottom: 20px;
+}
+
+.company-actions .btn {
+    margin-right: 10px;
+}
+
+/* ========================================
+   MOBILE RESPONSIVE STYLES
+   ======================================== */
+@media screen and (max-width: 768px) {
+    /* Prevent horizontal scroll */
+    body {
+        overflow-x: hidden !important;
+        max-width: 100vw;
+    }
+
+    .wrapper,
+    .content-wrapper {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+    }
+
+    /* Constrain card wrapper */
+    .card {
+        overflow-x: hidden !important;
+        max-width: 100% !important;
+    }
+
+    .card-body {
+        overflow-x: hidden !important;
+        max-width: 100% !important;
+        padding: 10px !important;
+    }
+
+    /* Fix sidebar margin on mobile - higher specificity */
+    body.sidebar-mini.sidebar-collapse .content-wrapper,
+    body.sidebar-mini.sidebar-collapse .main-footer,
+    .sidebar-mini.sidebar-collapse .content-wrapper,
+    .sidebar-mini.sidebar-collapse .main-footer {
+        margin-left: 0 !important;
+        max-width: 100vw;
+    }
+
+    /* Show mobile filter button */
+    .mobile-filter-btn {
+        display: inline-block;
+        margin-left: 10px;
+    }
+
+    /* Constrain table and grid-view */
+    .grid-view,
+    .table-responsive {
+        overflow-x: hidden !important;
+        max-width: 100% !important;
+    }
+
+    .table {
+        overflow-x: hidden !important;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    /* Table containing action-details must not expand */
+    .table:has(tr.action-details-row) {
+        width: 100% !important;
+        max-width: 100% !important;
+        table-layout: auto !important;
+    }
+
+    /* Tbody should also be constrained */
+    .table tbody {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+
+    /* Hide table headers including filters */
+    .table thead {
+        display: none;
+    }
+
+    /* Make table rows display as cards (EXCEPT action-details-row) */
+    .table tbody tr:not(.action-details-row) {
+        display: block;
+        margin-bottom: 15px;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        background: #fff;
+    }
+
+    .table.company-logs tbody tr:not(.action-details-row) {
+        padding: 3px 5px;
+    }
+
+    .table-bordered{
+        border: 0;
+    }
+
+    /* Keep action-details-row as table row but convert to block on mobile */
+    .table tbody tr.action-details-row {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .table tbody tr.action-details-row td {
+        display: block !important;
+        padding: 0 !important;
+        border: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+    }
+
+    .table tbody tr.action-details-row td::before {
+        display: none !important;
+    }
+
+    /* Make table cells display as blocks (EXCEPT in action-details-row) */
+    .table tbody tr:not(.action-details-row) td {
+        display: block;
+        text-align: left !important;
+        padding: 10px 15px;
+        border: none;
+        border-bottom: 1px solid #f0f0f0;
+        position: relative;
+        padding-left: 50%;
+    }
+
+    .table tbody tr:not(.action-details-row) td:last-child {
+        border-bottom: none;
+    }
+
+    /* Add labels before each cell using data-label attribute */
+    .table tbody tr:not(.action-details-row) td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        top: 10px;
+        font-weight: bold;
+        color: #495057;
+        white-space: nowrap;
+    }
+
+    /* Hide serial number column on mobile */
+    .table tbody tr:not(.action-details-row) td:first-child {
+        display: none;
+    }
+
+    /* Action column full width */
+    .table tbody tr:not(.action-details-row) td:last-child {
+        padding-left: 15px;
+        text-align: center !important;
+    }
+
+    .table tbody tr:not(.action-details-row) td:last-child::before {
+        display: none;
+    }
+
+    /* Make action icons more touchable */
+    .table tbody tr:not(.action-details-row) td:last-child a {
+        display: inline-block;
+        padding: 5px;
+        margin: 3px;
+    }
+
+    /* Grid summary and pager */
+    .summary {
+        padding: 10px 15px;
+        font-size: 0.9em;
+    }
+
+    .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    /* Buttons layout */
+    .mb-2 {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .mb-2 .btn {
+        flex: 1;
+        min-width: 120px;
+    }
+
+    /* Tabs on mobile */
+    .nav-tabs {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-tabs .nav-item {
+        flex: 0 0 auto;
+    }
+
+    .nav-tabs .nav-link {
+        font-size: 0.85em;
+        padding: 8px 12px;
+        white-space: nowrap;
+    }
+
+    /* ========================================
+       ACTION DETAILS - ENHANCED FIX
+       ======================================== */
+
+    /* Action details container - CRITICAL WIDTH CONTROL */
+    .action-details {
+        padding: 0 !important;
+        margin: 10px 0 !important;
+        border-radius: 8px;
+        border-left: 3px solid #6c757d;
+        overflow: hidden !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        min-width: 0 !important;
+    }
+
+    /* Override ANY inline styles */
+    .action-details[style*="width"],
+    .action-details[style*="max-width"],
+    .action-details[style*="min-width"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    /* Override specific AdminLTE/Yii2 inline styles */
+    .action-details input[style],
+    .action-details select[style],
+    .action-details textarea[style] {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* ALL children use border-box and no min-width */
+    .action-details *,
+    .action-details *::before,
+    .action-details *::after {
+        box-sizing: border-box !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    /* Break long words and URLs */
+    .action-details {
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        word-break: break-word !important;
+    }
+
+    /* Prevent any element from exceeding container */
+    .action-details > * {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+
+    /* Content wrapper */
+    .action-details .content {
+        padding: 8px !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    /* Tabs inside action-details on mobile - with rounded corners */
+    .action-details .card-header {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100%;
+        overflow: visible;
+    }
+
+    .action-details .nav-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        overflow: visible;
+        border-bottom: 2px solid #dee2e6;
+        margin-bottom: 0;
+        padding: 0;
+        max-width: 100%;
+        gap: 2px;
+    }
+
+    .action-details .nav-tabs .nav-item {
+        flex: 0 0 auto;
+        margin-bottom: -2px;
+    }
+
+    .action-details .nav-tabs .nav-link {
+        font-size: 14px;
+        padding: 10px 12px;
+        white-space: nowrap;
+        border: 1px solid #dee2e6;
+        border-bottom: 1px solid #dee2e6;
+        border-radius: 8px 8px 0 0;
+        color: #495057;
+        background: transparent;
+        transition: all 0.2s;
+        margin-right: 0;
+    }
+
+    .action-details .nav-tabs .nav-link:hover {
+        background: transparent;
+        border-color: #dee2e6 #dee2e6 transparent;
+    }
+
+    .action-details .nav-tabs .nav-link.active {
+        color: #007bff;
+        background: #fff;
+        border-color: #dee2e6 #dee2e6 #fff;
+        border-bottom: 2px solid #fff;
+        font-weight: 600;
+    }
+
+    /* Add padding to card-body instead */
+    .action-details .card-body {
+        padding: 12px 1px !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+        max-width: 100% !important;
+    }
+
+    /* Constrain card width inside action-details */
+    .action-details .card,
+    .action-details .card-secondary,
+    .action-details .card-tabs {
+        margin: 0 !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+        max-width: 100% !important;
+    }
+
+    /* Container fluid inside action details */
+    .action-details .container-fluid {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        overflow-x: hidden !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Override Bootstrap row and col */
+    .action-details .row {
+        margin-left: -5px !important;
+        margin-right: -5px !important;
+        max-width: 100% !important;
+    }
+
+    .action-details [class*="col-"] {
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+        max-width: 100% !important;
+    }
+
+    /* ========================================
+       VIEW TAB - INFO TABLES
+       ======================================== */
+
+    /* Info tables inside action details */
+    .company-info-section .table,
+    .landing-info-section .table {
+        font-size: 0.9em;
+        width: 100% !important;
+        max-width: 100% !important;
+        table-layout: fixed !important;
+    }
+
+    .company-info-section .table thead,
+    .landing-info-section .table thead {
+        display: none;
+    }
+
+    .company-info-section .table tbody tr,
+    .landing-info-section .table tbody tr {
+        display: table-row !important;
+        border: none;
+        box-shadow: none;
+        margin: 0;
+    }
+
+    .company-info-section .table tbody td,
+    .landing-info-section .table tbody td {
+        display: table-cell !important;
+        padding: 10px 12px !important;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .action-details .company-info-section .table td,
+    .action-details .landing-info-section .table td {
+        display: table-cell !important;
+        padding: 10px 12px !important;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .company-info-section .table tbody td::before,
+    .landing-info-section .table tbody td::before {
+        display: none !important;
+    }
+
+    .company-info-section .table th,
+    .landing-info-section .table th {
+        display: table-cell !important;
+        background: #f8f9fa;
+        border: none;
+        padding: 8px 12px;
+        font-weight: 600;
+        width: 130px !important;
+        max-width: 130px !important;
+        overflow: visible;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: normal;
+        font-size: 14px;
+        vertical-align: middle;
+    }
+
+    /* Override inline styles from PHP template */
+    .company-info-section .table th[style*="width"],
+    .landing-info-section .table th[style*="width"] {
+        width: 130px !important;
+        max-width: 130px !important;
+    }
+
+    .company-info-section .table td,
+    .landing-info-section .table td {
+        display: table-cell !important;
+        border: none;
+        padding: 10px 12px;
+        border-bottom: 1px solid #f0f0f0;
+        width: auto !important;
+        max-width: none !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-word;
+        font-size: 14px;
+    }
+
+    /* Links and badges */
+    .company-info-section .table a,
+    .landing-info-section .table a {
+        word-break: break-all;
+        font-size: 14px;
+    }
+
+    .company-info-section .table .badge {
+        font-size: 0.85em;
+        padding: 6px 10px;
+    }
+
+    .company-info-section .table small,
+    .landing-info-section .table small {
+        font-size: 0.8em;
+        display: block;
+        margin-top: 4px;
+    }
+
+    /* Text muted elements */
+    .text-muted {
+        font-size: 0.9em;
+    }
+
+    /* API Key display section */
+    .landing-info-section .d-flex {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px;
+    }
+
+    .landing-info-section .d-flex span {
+        word-break: break-all;
+        margin-right: 0 !important;
+        margin-bottom: 0 !important;
+        font-size: 13px;
+        font-family: monospace;
+    }
+
+    .landing-info-section .d-flex .btn {
+        width: 100%;
+        padding: 8px 12px !important;
+        font-size: 14px !important;
+    }
+
+    /* ========================================
+       COMPANY ACTIONS BUTTONS
+       ======================================== */
+
+    .company-actions .btn-group {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .company-actions .btn {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    /* ========================================
+       UPDATE FORM INSIDE ACTION DETAILS
+       ======================================== */
+
+    /* Constrain form width */
+    .action-details .company-update-form {
+        max-width: 100% !important;
+        overflow: hidden !important;
+        width: 100% !important;
+    }
+
+    .action-details form {
+        max-width: 100% !important;
+        overflow: hidden !important;
+        width: 100% !important;
+    }
+
+    /* Form groups and fields */
+    .action-details .form-group,
+    .action-details [class*="field-"] {
+        max-width: 100% !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        overflow: hidden !important;
+        margin-bottom: 15px !important;
+    }
+
+    /* Labels - allow text wrapping */
+    .action-details label,
+    .action-details .control-label {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        white-space: normal !important;
+        margin-bottom: 8px !important;
+        font-size: 16px !important;
+        font-weight: 700 !important;
+    }
+
+    /* Make all form controls fit within container */
+    .action-details .form-control,
+    .action-details input[type="text"],
+    .action-details input[type="email"],
+    .action-details input[type="password"],
+    .action-details input[type="number"],
+    .action-details input[type="url"],
+    .action-details select,
+    .action-details textarea {
+        max-width: 100% !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        padding: 10px 12px !important;
+        font-size: 16px !important;
+        line-height: 1.5 !important;
+        height: auto !important;
+        min-height: 44px !important;
+    }
+
+    /* Specific for select to handle dropdown arrow and match input height */
+    .action-details select.form-control,
+    .action-details select {
+        padding: 9px 12px 9px 12px !important;
+        height: 44px !important;
+    }
+
+    /* Textarea can be taller */
+    .action-details textarea {
+        min-height: 80px !important;
+        height: auto !important;
+        resize: vertical !important;
+    }
+
+    /* Override inline width styles on inputs */
+    .action-details input[style*="width"],
+    .action-details select[style*="width"],
+    .action-details textarea[style*="width"] {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Input groups for API key buttons */
+    .action-details .input-group {
+        display: flex !important;
+        flex-direction: column !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        gap: 10px;
+    }
+
+    .action-details .input-group .form-control {
+        margin-bottom: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: none !important;
+        display: block !important;
+    }
+
+    .action-details .input-group-append {
+        display: flex !important;
+        width: 100% !important;
+        gap: 10px;
+        margin-left: 0 !important;
+    }
+
+    .action-details .input-group-append .btn {
+        flex: 1 !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        padding: 10px 8px !important;
+        font-size: 14px !important;
+    }
+
+    /* Form buttons stack vertically */
+    .action-details .company-update-form .form-group:last-child,
+    .action-details form .form-group:last-child {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px;
+        margin-top: 20px !important;
+    }
+
+    .action-details .company-update-form .form-group:last-child .btn,
+    .action-details form .form-group:last-child .btn {
+        width: 100% !important;
+        padding: 12px !important;
+        margin: 0 !important;
+    }
+
+    /* Ensure labels and hints don't overflow */
+    .action-details .hint-block,
+    .action-details .help-block,
+    .action-details .invalid-feedback {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        word-break: break-word !important;
+        white-space: normal !important;
+        font-size: 14px !important;
+        line-height: 1.5 !important;
+        margin-top: 6px !important;
+        color: #6c757d;
+    }
+
+    /* Constrain all text and inline elements */
+    .action-details div,
+    .action-details span,
+    .action-details p,
+    .action-details a {
+        max-width: 100% !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        white-space: normal !important;
+    }
+
+    /* Specific fix for long URLs or text in inputs */
+    .action-details input[type="text"],
+    .action-details input[type="url"] {
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    /* Headings inside action-details */
+    .action-details h1,
+    .action-details h2,
+    .action-details h3,
+    .action-details h4,
+    .action-details h5,
+    .action-details h6 {
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        max-width: 100% !important;
+        font-size: 1.1em !important;
+        margin-bottom: 12px !important;
+        margin-top: 0 !important;
+    }
+
+    /* Company actions section */
+    .action-details .company-actions {
+        margin-top: 16px !important;
+    }
+
+    .action-details .company-actions h5 {
+        margin-bottom: 10px !important;
+    }
+
+    .action-details .company-actions .btn-group {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 8px;
+    }
+
+    .action-details .company-actions .btn {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 10px 12px !important;
+        font-size: 14px !important;
+    }
+
+    /* Yii2 field classes */
+    .action-details [class*="field-"] * {
+        max-width: 100% !important;
+    }
+
+    /* ========================================
+       DETAIL VIEW WIDGET (for employee views, etc.)
+       ======================================== */
+
+    .detail-view {
+        width: 100% !important;
+        max-width: 100% !important;
+        table-layout: fixed !important;
+        font-size: 14px;
+    }
+
+    .detail-view thead {
+        display: none;
+    }
+
+    .detail-view tbody tr {
+        display: table-row !important;
+        border: none;
+        box-shadow: none;
+        margin: 0;
+    }
+
+    .detail-view th {
+        display: table-cell !important;
+        background: #f8f9fa;
+        border: none;
+        padding: 10px 12px;
+        font-weight: 600;
+        width: 130px !important;
+        max-width: 130px !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 14px;
+        vertical-align: middle;
+        word-wrap: break-word;
+    }
+
+    .detail-view td {
+        display: table-cell !important;
+        border: none;
+        padding: 10px 12px;
+        border-bottom: 1px solid #f0f0f0;
+        width: auto !important;
+        max-width: none !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-word;
+        font-size: 14px;
+    }
+
+    .detail-view tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Links in detail view */
+    .detail-view a {
+        word-break: break-all;
+        font-size: 14px;
+    }
+
+    /* ========================================
+       GENERAL PAGE TABS (not inside action-details)
+       ======================================== */
+
+    /* Card tabs on main pages */
+    .card-tabs .nav-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        overflow: visible;
+        border-bottom: 2px solid #dee2e6;
+        margin-bottom: 0;
+        padding: 0;
+        gap: 2px;
+    }
+
+    .card-tabs .nav-tabs .nav-item {
+        flex: 0 0 auto;
+        margin-bottom: -2px;
+    }
+
+    .card-tabs .nav-tabs .nav-link {
+        font-size: 14px;
+        padding: 10px 12px;
+        white-space: nowrap;
+        border: 1px solid #dee2e6;
+        border-bottom: 1px solid #dee2e6;
+        border-radius: 8px 8px 0 0;
+        color: #495057;
+        background: transparent;
+        transition: all 0.2s;
+        margin-right: 0;
+    }
+
+    .card-tabs .nav-tabs .nav-link:hover {
+        background: transparent;
+        border-color: #dee2e6 #dee2e6 transparent;
+    }
+
+    .card-tabs .nav-tabs .nav-link.active {
+        color: #007bff;
+        background: #fff;
+        border-color: #dee2e6 #dee2e6 #fff;
+        border-bottom: 2px solid #fff;
+        font-weight: 600;
+    }
+}
+
+/* ========================================
+   TABLET STYLES
+   ======================================== */
+@media screen and (min-width: 769px) and (max-width: 992px) {
+    .table {
+        font-size: 0.9em;
+    }
+
+    .table th,
+    .table td {
+        padding: 8px;
+    }
+}
+
+/* ========================================
+   DESKTOP TABS IMPROVEMENTS
+   ======================================== */
+@media screen and (min-width: 769px) {
+    /* Better tab styling on desktop */
+    .action-details .nav-tabs {
+        border-bottom: 2px solid #dee2e6;
+        flex-wrap: wrap;
+    }
+
+    .action-details .nav-tabs .nav-item {
+        margin-bottom: -2px;
+    }
+
+    .action-details .nav-tabs .nav-link {
+        border: 1px solid #dee2e6;
+        border-bottom: 1px solid #dee2e6;
+        border-radius: 8px 8px 0 0;
+        padding: 12px 20px;
+        color: #495057;
+        transition: all 0.2s;
+        background: transparent;
+    }
+
+    .action-details .nav-tabs .nav-link:hover {
+        background: transparent;
+        border-color: #dee2e6 #dee2e6 transparent;
+    }
+
+    .action-details .nav-tabs .nav-link.active {
+        color: #007bff;
+        background: #fff;
+        border-color: #dee2e6 #dee2e6 #fff;
+        border-bottom: 2px solid #fff;
+        font-weight: 600;
+    }
+
+    /* Better table layout on desktop */
+    .company-info-section .table th,
+    .landing-info-section .table th {
+        width: 200px;
+        max-width: 200px;
+    }
+
+    .company-info-section .table td,
+    .landing-info-section .table td {
+        width: auto;
+        max-width: none;
+    }
+
+    /* General page tabs on desktop (not inside action-details) */
+    .card-tabs .nav-tabs {
+        border-bottom: 2px solid #dee2e6;
+        flex-wrap: wrap;
+    }
+
+    .card-tabs .nav-tabs .nav-item {
+        margin-bottom: -2px;
+    }
+
+    .card-tabs .nav-tabs .nav-link {
+        border: 1px solid #dee2e6;
+        border-bottom: 1px solid #dee2e6;
+        border-radius: 8px 8px 0 0;
+        padding: 12px 20px;
+        color: #495057;
+        transition: all 0.2s;
+        background: transparent;
+    }
+
+    .card-tabs .nav-tabs .nav-link:hover {
+        background: transparent;
+        border-color: #dee2e6 #dee2e6 transparent;
+    }
+
+    .card-tabs .nav-tabs .nav-link.active {
+        color: #007bff;
+        background: #fff;
+        border-color: #dee2e6 #dee2e6 #fff;
+        border-bottom: 2px solid #fff;
+        font-weight: 600;
+    }
+
+    /* DetailView on desktop */
+    .detail-view th {
+        width: 200px;
+        max-width: 200px;
+    }
+
+    .detail-view td {
+        width: auto;
+        max-width: none;
+    }
+}
+
+/* ========================================
+   DASHBOARD PAGE MOBILE STYLES
+   ======================================== */
+@media screen and (max-width: 768px) {
+    /* Info boxes on mobile - 2 per row on mobile */
+    .info-box {
+        margin-bottom: 15px !important;
+    }
+
+    .info-box-icon {
+        width: 60px !important;
+        font-size: 1.75rem !important;
+    }
+
+    .info-box-content {
+        padding: 8px 10px !important;
+    }
+
+    .info-box-text {
+        font-size: 0.8rem !important;
+        line-height: 1.2 !important;
+    }
+
+    .info-box-number {
+        font-size: 1.4rem !important;
+    }
+
+    /* Allow 2 columns for info boxes on mobile */
+    .dashboard-info-box-col {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+    }
+
+    /* Stats tables - horizontal scroll for wide tables */
+    .stats-table {
+        margin-bottom: 20px;
+    }
+
+    .stats-table .table-header {
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+    }
+
+    /* Make tables scrollable horizontally on mobile */
+    .stats-table .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .stats-table .table {
+        min-width: 600px;
+        font-size: 0.85rem;
+    }
+
+    .stats-table .table thead th {
+        font-size: 0.7rem;
+        padding: 0.5rem 0.3rem;
+        white-space: nowrap;
+    }
+
+    .stats-table .table tbody td {
+        padding: 0.5rem 0.3rem;
+        font-size: 0.8rem;
+    }
+
+    /* Package and Task statistics - convert to cards on mobile */
+    .period-stats-mobile {
+        display: block !important;
+    }
+
+    .period-stats-desktop {
+        display: none !important;
+    }
+
+    .period-stat-card {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .period-stat-header {
+        font-weight: 700;
+        font-size: 1rem;
+        color: #212529;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .period-stat-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .period-stat-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .period-stat-label {
+        font-size: 0.75rem;
+        color: #6c757d;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+
+    .period-stat-value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #212529;
+    }
+
+    /* Company statistics table - convert to card format on mobile */
+    .company-stats-mobile {
+        display: block !important;
+    }
+
+    .company-stats-desktop {
+        display: none !important;
+    }
+
+    .company-stat-card {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .company-stat-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .company-stat-period {
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: #495057;
+        text-transform: uppercase;
+        background: #f8f9fa;
+        padding: 4px 10px;
+        border-radius: 4px;
+    }
+
+    .company-stat-company {
+        font-weight: 600;
+        font-size: 1rem;
+        color: #212529;
+    }
+
+    .company-stat-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .company-stat-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .company-stat-label {
+        font-size: 0.75rem;
+        color: #6c757d;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+
+    .company-stat-value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #212529;
+    }
+
+    /* Headings with icons */
+    h5 {
+        font-size: 1rem !important;
+    }
+
+    h5 i {
+        font-size: 0.9rem;
+    }
+
+    /* Ensure stats-rate is readable */
+    .stats-rate {
+        font-size: 0.7rem !important;
+        margin-top: 2px;
+        line-height: 1.2;
+    }
+
+    /* Row spacing on mobile */
+    .row.mb-4 {
+        margin-bottom: 1.5rem !important;
+    }
+}
+
+/* Desktop - hide mobile company stats */
+@media screen and (min-width: 769px) {
+    .company-stats-mobile {
+        display: none !important;
+    }
+
+    .company-stats-desktop {
+        display: block !important;
+    }
+
+    .period-stats-mobile {
+        display: none !important;
+    }
+
+    .period-stats-desktop {
+        display: block !important;
+    }
+}
+
+/* Desktop - keep scroll for log details */
+@media screen and (min-width: 769px) {
+    .log-details {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+}
+
+/* Mobile - no scroll, show all content */
+@media screen and (max-width: 768px) {
+    .log-details {
+        max-height: none !important;
+        overflow-y: visible !important;
+        overflow-x: hidden !important;
+    }
+
+    /* Pre blocks - wrap text */
+    .log-details pre {
+        max-height: none !important;
+        overflow: visible !important;
+        white-space: pre-wrap !important;
+        word-break: break-word !important;
+    }
+
+    /* Output in details tag - limited height */
+    .log-details details pre {
+        max-height: 300px !important;
+        overflow-y: auto !important;
+    }
+
+    /* Fix flex wrap for step header */
+    .log-details .d-flex {
+        flex-wrap: wrap !important;
+        gap: 5px;
+    }
+}
