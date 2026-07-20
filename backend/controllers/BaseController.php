@@ -6,6 +6,7 @@ use yii\web\Controller;
 
 class BaseController extends Controller
 {
+
     /**
      * This method is invoked right before an action is executed.
      * Updates last_activity timestamp for authenticated users.
@@ -16,13 +17,24 @@ class BaseController extends Controller
     public function beforeAction($action)
     {
         if (parent::beforeAction($action)) {
-            // Update last_activity for authenticated users
-            if (!Yii::$app->user->isGuest) {
-                $user = Yii::$app->user->identity;
-                if ($user) {
-                    $user->updateAttributes(['last_activity' => time()]);
-                }
+            if ($action->controller->id === 'site') {
+                return true;
             }
+
+            if (Yii::$app->user->isGuest) {
+                Yii::$app->user->loginRequired();
+                return false;
+            }
+
+            if (!Yii::$app->user->can('super-administrator')) {
+                throw new \yii\web\ForbiddenHttpException('Access denied.');
+            }
+
+            $user = Yii::$app->user->identity;
+            if ($user) {
+                $user->updateAttributes(['last_activity' => time()]);
+            }
+
             return true;
         }
         return false;

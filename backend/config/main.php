@@ -100,53 +100,12 @@ return [
             'site/*',
             //'gii/*',
             "debug/*",
-            "employees/*",
-            "admin/*",
-            //'settings/*',
-           /* 'personal/contract',
-            'personal/view-contract-pdf',
-            'personal/get-contract',
-            'personal/tasks',
-            'personal/packages',
-            'personal/package',
-            'personal/task',
-            'personal/accept-task',
-            'personal/reject-task',
-            'personal/complete-task',
-            'personal/accept-package',
-            'personal/reject-package',
-            'personal/complete-package',*/
-            'personal/*',
-            '/chat/download-attachment',
-            'packages/create-for-courier',
-            'tasks/create-for-package',
-            'tasks/get-tracking-status',
-            'packages/get-tracking-status',
-
-            'tasks/download-label',
-            'tasks/download-document',
-
-            'packages/download-label',
-            'packages/download-document',
-
-            'tasks/return-to-work',
-            'tasks/complete-task',
-
-            'packages/return-to-work',
-            'packages/complete-package',
-
-            'reminders/*',
+            //"users/*",
+            //"admin/*",
             'notification/*',
 
-            'my-chat/*',
-            'chat/*',
-
-            'urgent-call/*',
             'companies/*',
             'logs-admin/*'
-
-            //'packages/test',
-            //'test-after-ship/*'
         ]
     ],
     'params' => $params,
