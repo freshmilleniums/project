@@ -115,6 +115,11 @@ class User extends \common\models\User
     {
         $scenarios = parent::scenarios();
         $scenarios['sign_contract'] = ['sign_signature_style', 'sign_signature_text'];
+        $scenarios['company_admin_create'] = [
+            'first_name', 'last_name', 'email',
+            'password_hash', 'auth_key', 'verification_token',
+            'status', 'company_id', 'created_at', 'updated_at'
+        ];
         return $scenarios;
     }
 
