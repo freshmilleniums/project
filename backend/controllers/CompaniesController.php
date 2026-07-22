@@ -129,6 +129,7 @@ class CompaniesController extends BaseController
 
                 if (!$admin->save()) {
                     $transaction->rollBack();
+                    Yii::warning('Admin save failed: ' . json_encode($admin->getErrors()), 'company-creation');
                     foreach ($admin->getErrors() as $attribute => $errors) {
                         foreach ($errors as $error) {
                             $model->addError('admin_' . $attribute, $error);
@@ -142,6 +143,7 @@ class CompaniesController extends BaseController
 
                 if (!$localAdminRole) {
                     $transaction->rollBack();
+                    Yii::warning('administrator role not found in authManager', 'company-creation');
                     $model->addError('admin_email', 'Local administrator role not found in the system.');
                     return $this->render('create', ['model' => $model]);
                 }
@@ -151,6 +153,7 @@ class CompaniesController extends BaseController
                 $model->administrator_id = $admin->id;
                 if (!$model->save(false, ['administrator_id'])) {
                     $transaction->rollBack();
+                    Yii::warning('Companies administrator_id save failed: ' . json_encode($model->getErrors()), 'company-creation');
                     $model->addError('administrator_id', 'Failed to assign administrator to company.');
                     return $this->render('create', ['model' => $model]);
                 }
