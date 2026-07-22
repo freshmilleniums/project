@@ -156,13 +156,20 @@ class CompaniesController extends BaseController
                 }
 
                 $transaction->commit();
+                Yii::warning('Company created successfully, ID: ' . $model->id, 'company-creation');
 
-                $this->logCompanyCreation($model);
+                try {
+                    $this->logCompanyCreation($model);
+                } catch (\Exception $e) {
+                    Yii::warning('logCompanyCreation failed: ' . $e->getMessage(), 'company-creation');
+                }
 
                 // Success message
                 Yii::$app->session->setFlash('success',
                     'Company "' . Html::encode($model->name) . '" created successfully! Starting deployment...'
                 );
+
+                Yii::warning('Redirecting to deployment-progress, ID: ' . $model->id, 'company-creation');
 
                 return $this->redirect(['deployment-progress', 'id' => $model->id]);
 
