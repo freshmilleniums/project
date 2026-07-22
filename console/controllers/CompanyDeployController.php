@@ -128,6 +128,14 @@ class CompanyDeployController extends Controller
             }
             $this->updateProgress($deploymentLog, 'CRM files copied successfully', 45);
 
+            $this->updateProgress($deploymentLog, 'Initializing Yii2 application environment...', 47);
+            $initOutput = [];
+            $initReturnCode = null;
+            $initCommand = "cd {$deploymentPath} && php init --env=Production --overwrite=n 2>&1";
+            exec($initCommand, $initOutput, $initReturnCode);
+            $this->stdout("Init output: " . implode("\n", $initOutput) . "\n");
+            $this->stdout("Init exit code: {$initReturnCode}\n");
+
             // Step 4: Prepare configuration files
             $this->updateProgress($deploymentLog, 'Preparing CRM configuration files...', 50);
             if (!$this->prepareCRMConfigSharedDB($deploymentPath, $company)) {
