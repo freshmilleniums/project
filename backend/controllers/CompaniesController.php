@@ -126,6 +126,7 @@ class CompaniesController extends BaseController
 
                 $admin->created_at = time();
                 $admin->updated_at = time();
+                $admin->setRole('administrator');
 
                 if (!$admin->save()) {
                     $transaction->rollBack();
