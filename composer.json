@@ -28,7 +28,8 @@
         "tinymce/tinymce": "^7.9",
         "firebase/php-jwt": "^6.11",
         "react/socket": "^1.16",
-        "react/http": "^1.11"
+        "react/http": "^1.11",
+        "symfony/dom-crawler": "^6.4"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",
