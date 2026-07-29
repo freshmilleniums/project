@@ -21,6 +21,7 @@ use backend\models\User;
  * @property string|null $smtp_password
  * @property int $need_config_update
  * @property string|null $previous_url
+ * @property string|null $email_domain
  *
  * @property User $administrator
  */
@@ -79,6 +80,11 @@ class Companies extends \yii\db\ActiveRecord
             [['administrator_id'], 'required', 'on' => 'update'],
             // SMTP validation rules
             [['smtp_port'], 'integer', 'min' => 1, 'max' => 65535],
+            [['email_domain'], 'filter', 'filter' => function ($value) {
+                return Companies::extractDomain($value) ?? $value;
+            }],
+            [['email_domain'], 'string', 'max' => 255],
+            [['email_domain'], 'match', 'pattern' => '/^[a-z0-9]([a-z0-9\-]{0,61}[a-z0-9])?(\.[a-z]{2,})+$/i', 'message' => 'Enter a valid domain (e.g. mail.company.com)'],
         ];
     }
 
@@ -106,6 +112,7 @@ class Companies extends \yii\db\ActiveRecord
             'smtp_password' => 'SMTP Password',
             'need_config_update' => 'Config Update Required',
             'previous_url' => 'Previous URL',
+            'email_domain' => 'Corporate Email Domain',
         ];
     }
 

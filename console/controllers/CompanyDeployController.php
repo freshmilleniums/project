@@ -799,6 +799,10 @@ require __DIR__ . '/../config/bootstrap.php';
                 $content = file_get_contents($paramsTemplate);
                 $companyDomain = $this->generateCompanyURL($company, false);
 
+                $corporateEmailDomain = !empty($company->email_domain)
+                    ? $company->email_domain
+                    : $companyDomain;
+
                 $replacements = [
                     '{{COMPANY_ID}}' => $company->id,
                     '{{EMAIL_ENCRYPTION_KEY}}' => base64_encode(random_bytes(32)),
@@ -812,6 +816,7 @@ require __DIR__ . '/../config/bootstrap.php';
                     '{{SSL_CERT_PATH}}' => "/etc/letsencrypt/live/{$companyDomain}/fullchain.pem",
                     '{{SSL_KEY_PATH}}' => "/etc/letsencrypt/live/{$companyDomain}/privkey.pem",
                     '{{COMPANY_DOMAIN}}' => $companyDomain,
+                    '{{CORPORATE_EMAIL_DOMAIN}}' => $corporateEmailDomain,
                     '{{COMPANY_NAME}}' => addslashes($company->name),
                     '{{FRONTEND_URL}}' => "https://{$companyDomain}",
                     '{{BACKEND_URL}}' => "https://{$companyDomain}/crm-panel",

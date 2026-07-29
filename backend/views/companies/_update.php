@@ -57,6 +57,11 @@ $(document).on('click', '#copy-api-key-btn', function(e) {
 
     <?= $form->field($model, 'url')->textInput(['maxlength' => true]) ?>
 
+    <?= $form->field($model, 'email_domain')->textInput([
+        'maxlength' => true,
+        'placeholder' => 'mail.company.com',
+    ])->hint('Custom domain for corporate email (e.g. mail.company.com). Leave empty to use auto-generated domain.') ?>
+
     <?= $form->field($model, 'status')->dropDownList(Companies::getStatusList()) ?>
 
     <?= $form->field($model, 'landing_url')->textInput(['maxlength' => true])->hint('Enter the landing page URL (e.g., https://example.com or https://landing.example.com)') ?>
@@ -86,9 +91,7 @@ $(document).on('click', '#copy-api-key-btn', function(e) {
         <?= Html::error($model, 'landing_api_key', ['class' => 'invalid-feedback']) ?>
     </div>
 
-    <?= $form->field($model, 'administrator_id')->dropDownList($users, [
-        'prompt' => 'Select Administrator'
-    ])->label('Administrator') ?>
+   
 
     <hr>
 

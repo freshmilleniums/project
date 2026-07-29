@@ -55,6 +55,11 @@ $(document).on('click', '#copy-api-key-btn', function(e) {
 
     <?= $form->field($model, 'url')->textInput(['maxlength' => true])->hint('Enter the subdomain or domain for this company') ?>
 
+    <?= $form->field($model, 'email_domain')->textInput([
+        'maxlength' => true,
+        'placeholder' => 'mail.company.com',
+    ])->hint('Custom domain for corporate email (e.g. mail.company.com). Leave empty to use auto-generated domain.') ?>
+
     <hr>
 
     <h5>Landing Integration</h5>

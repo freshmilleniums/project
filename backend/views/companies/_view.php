@@ -143,6 +143,16 @@ $this->registerJs("
                                     ]) ?>
                                 </td>
                             </tr>
+                            <tr>
+                                <th>Corporate Email Domain</th>
+                                <td>
+                                    <?php if ($model->email_domain): ?>
+                                        <?= Html::encode($model->email_domain) ?>
+                                    <?php else: ?>
+                                        <span class="text-muted">Not set (auto-generated)</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
                             <?php if ($model->needsConfigUpdate()): ?>
                                 <tr>
                                     <th>Config Status</th>
