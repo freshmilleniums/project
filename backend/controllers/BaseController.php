@@ -17,7 +17,7 @@ class BaseController extends Controller
     public function beforeAction($action)
     {
         if (parent::beforeAction($action)) {
-            if ($action->controller->id === 'site') {
+            if ($action->controller->id === 'site' && in_array($action->id, ['login', 'logout', 'signup'])) {
                 return true;
             }
 

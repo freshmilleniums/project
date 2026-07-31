@@ -8,7 +8,7 @@ $params = array_merge(
 
 return [
     'id' => 'app-backend',
-    'homeUrl' => '/crm-panel/',
+    'homeUrl' => '/',
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
@@ -32,7 +32,7 @@ return [
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-backend',
-            'baseUrl' => '/crm-panel',
+            'baseUrl' => '',
         ],
         'user' => [
             'identityClass' => 'common\models\User',
