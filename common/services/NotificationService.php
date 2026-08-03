@@ -257,9 +257,9 @@ class NotificationService
      */
     public function sendWelcomeNotification($userId)
     {
-        $text = "Welcome to our courier platform! Thank you for registering with us. " .
-            "Your application has been received and will be reviewed by our HR team. " .
-            "You will receive further instructions about the next steps in the recruitment process soon.";
+        $text = "Welcome! Thank you for registering. " .
+            "Your application has been received and will be reviewed by our administrator. " .
+            "You will receive further instructions about the next steps soon.";
 
         return $this->createNotification($userId, $text, true);
     }
@@ -274,7 +274,7 @@ class NotificationService
      */
     public function sendTestCompletionNotification($userId, $interviewDate = '', $interviewTime = '', $contactInfo = '')
     {
-        $text = "Congratulations! Your test results have been reviewed and approved by our HR team. 
+        $text = "Congratulations! Your test results have been reviewed and approved by our team. 
             The next step is a phone interview.
             Please be available at the scheduled time. Good luck!";
 
@@ -303,7 +303,7 @@ class NotificationService
      */
     public function sendContractSignedNotification($userId)
     {
-        $text = "Congratulations! You are now officially part of our courier team! " .
+        $text = "Congratulations! You are now officially part of our team! " .
             "Your signed contract has been processed and approved. " .
             "You will soon receive your first delivery assignment. " .
             "Please make sure to check your dashboard regularly for new tasks and updates. " .

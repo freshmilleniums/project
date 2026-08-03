@@ -37,6 +37,8 @@ class Task extends \yii\db\ActiveRecord
     const STATUS_COMPLETED = 3;
     const STATUS_ON_HOLD = 4;
     const STATUS_CANCELLED = 5;
+    const IS_TRAINING = 1;
+    const IS_NOT_TRAINING = 0;
 
     public $due_date_formatted;
 
@@ -65,12 +67,18 @@ class Task extends \yii\db\ActiveRecord
     {
         return [
             [['title'], 'required'],
-            [['template_id', 'assigned_to', 'priority', 'status', 'due_date', 'created_by', 'created_at', 'updated_at'], 'integer'],
+            [['template_id', 'assigned_to', 'priority', 'status', 'due_date', 'created_by', 'created_at', 'updated_at',
+                'is_training', 'training_module_id', 'training_employee_id'], 'integer'],
             [['title', 'subject'], 'string', 'max' => 255],
             [['description'], 'string', 'max' => 5000],
             [['priority'], 'in', 'range' => array_keys(self::getPriorityList())],
             [['status'], 'in', 'range' => array_keys(self::getStatusList())],
             [['due_date_formatted'], 'safe'],
+            [['is_training'], 'default', 'value' => self::IS_NOT_TRAINING],
+            [['company_id'], 'integer'],
+            [['company_id'], 'default', 'value' => function() {
+                return \Yii::$app->params['company_id'] ?? null;
+            }],
         ];
     }
 
@@ -93,6 +101,9 @@ class Task extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
             'due_date_formatted' => 'Due Date',
+            'is_training'          => 'Training Task',
+            'training_module_id'   => 'Training Module',
+            'training_employee_id' => 'Training Employee',
         ];
     }
 
@@ -198,11 +209,33 @@ class Task extends \yii\db\ActiveRecord
         }
     }
 
+    public static function find()
+    {
+        $query = parent::find();
+        $companyId = \Yii::$app->params['company_id'] ?? null;
+
+        if ($companyId === null || $companyId < 1) {
+            $query->where('1=0');
+            return $query;
+        }
+
+        $query->andWhere(['company_id' => $companyId]);
+        return $query;
+    }
+
     /**
      */
     public function beforeSave($insert)
     {
         if (parent::beforeSave($insert)) {
+            if ($insert) {
+                if ($this->company_id === null) {
+                    $this->company_id = \Yii::$app->params['company_id'] ?? null;
+                }
+                if ($this->company_id === null || $this->company_id < 1) {
+                    return false;
+                }
+            }
             // Convert formatted date string to UNIX timestamp
             if (!empty($this->due_date_formatted)) {
                 $timestampValue = strtotime($this->due_date_formatted);
@@ -218,5 +251,22 @@ class Task extends \yii\db\ActiveRecord
             return true;
         }
         return false;
+    }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+
+        if (
+            !$insert &&
+            isset($changedAttributes['status']) &&
+            (int)$this->status === self::STATUS_COMPLETED &&
+            (int)$this->is_training === self::IS_TRAINING &&
+            $this->training_module_id !== null &&
+            $this->training_employee_id !== null
+        ) {
+            $trainingProgressService = new \common\services\TrainingProgressService();
+            $trainingProgressService->completeModule($this->training_module_id, $this->training_employee_id);
+        }
     }
 }
