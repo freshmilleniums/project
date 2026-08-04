@@ -25,6 +25,15 @@ fi
 
 echo "Using project path: $PROJECT_PATH"
 
+# Auto-detect web user from project directory ownership
+WEB_USER=$(stat -c '%U' "$PROJECT_PATH")
+if [ -z "$WEB_USER" ] || [ "$WEB_USER" = "root" ]; then
+    WEB_USER="www-data"
+    echo "⚠ Could not detect web user, using default: www-data"
+else
+    echo "✓ Auto-detected web user: $WEB_USER"
+fi
+
 # Create ENHANCED root wrapper
 sudo tee /usr/local/bin/crm-deploy-root << EOF
 #!/bin/bash
@@ -233,52 +242,44 @@ sudo chown root:root /usr/local/bin/mailbox-manager.sh
 echo "✓ mailbox-manager.sh created and secured"
 
 # Configure ENHANCED sudo access with DELETE and SSL permissions
-sudo tee /etc/sudoers.d/crm-deployment << 'EOF'
+sudo tee /etc/sudoers.d/crm-deployment << EOF
 # Enhanced sudo for CRM deployment with Start/Stop/DELETE/Update-Config/SSL - both web users
 www-data ALL=(root) NOPASSWD: /usr/local/bin/crm-deploy-root
-crm_delivery_usr ALL=(root) NOPASSWD: /usr/local/bin/crm-deploy-root
+$WEB_USER ALL=(root) NOPASSWD: /usr/local/bin/crm-deploy-root
 
 # Mailbox management for crm-employers
 www-data ALL=(root) NOPASSWD: /usr/local/bin/mailbox-manager.sh
-crm_delivery_usr ALL=(root) NOPASSWD: /usr/local/bin/mailbox-manager.sh
+$WEB_USER ALL=(root) NOPASSWD: /usr/local/bin/mailbox-manager.sh
 
 # Additional permissions for nginx management
 www-data ALL=(root) NOPASSWD: /bin/systemctl reload nginx
 www-data ALL=(root) NOPASSWD: /bin/systemctl stop nginx
 www-data ALL=(root) NOPASSWD: /bin/systemctl start nginx
-crm_delivery_usr ALL=(root) NOPASSWD: /bin/systemctl reload nginx
-crm_delivery_usr ALL=(root) NOPASSWD: /bin/systemctl stop nginx
-crm_delivery_usr ALL=(root) NOPASSWD: /bin/systemctl start nginx
-
-# Additional permissions for MySQL operations (DELETE functionality)
-www-data ALL=(root) NOPASSWD: /usr/bin/mysql
-crm_delivery_usr ALL=(root) NOPASSWD: /usr/bin/mysql
-
-# Additional permissions for moving directories (UPDATE-CONFIG functionality)
-www-data ALL=(root) NOPASSWD: /bin/mv
-crm_delivery_usr ALL=(root) NOPASSWD: /bin/mv
+$WEB_USER ALL=(root) NOPASSWD: /bin/systemctl reload nginx
+$WEB_USER ALL=(root) NOPASSWD: /bin/systemctl stop nginx
+$WEB_USER ALL=(root) NOPASSWD: /bin/systemctl start nginx
 
 # SSL/Certbot permissions
 www-data ALL=(root) NOPASSWD: /usr/bin/certbot
 www-data ALL=(root) NOPASSWD: /usr/bin/certbot *
 www-data ALL=(root) NOPASSWD: /snap/bin/certbot
 www-data ALL=(root) NOPASSWD: /snap/bin/certbot *
-crm_delivery_usr ALL=(root) NOPASSWD: /usr/bin/certbot
-crm_delivery_usr ALL=(root) NOPASSWD: /usr/bin/certbot *
-crm_delivery_usr ALL=(root) NOPASSWD: /snap/bin/certbot
-crm_delivery_usr ALL=(root) NOPASSWD: /snap/bin/certbot *
+$WEB_USER ALL=(root) NOPASSWD: /usr/bin/certbot
+$WEB_USER ALL=(root) NOPASSWD: /usr/bin/certbot *
+$WEB_USER ALL=(root) NOPASSWD: /snap/bin/certbot
+$WEB_USER ALL=(root) NOPASSWD: /snap/bin/certbot *
 
 # OpenSSL for certificate expiry checks
 www-data ALL=(root) NOPASSWD: /usr/bin/openssl
-crm_delivery_usr ALL=(root) NOPASSWD: /usr/bin/openssl
+$WEB_USER ALL=(root) NOPASSWD: /usr/bin/openssl
 
 # APT/Snap for certbot installation if missing
 www-data ALL=(root) NOPASSWD: /usr/bin/apt-get update
 www-data ALL=(root) NOPASSWD: /usr/bin/apt-get install -y certbot
 www-data ALL=(root) NOPASSWD: /usr/bin/snap install certbot --classic
-crm_delivery_usr ALL=(root) NOPASSWD: /usr/bin/apt-get update
-crm_delivery_usr ALL=(root) NOPASSWD: /usr/bin/apt-get install -y certbot
-crm_delivery_usr ALL=(root) NOPASSWD: /usr/bin/snap install certbot --classic
+$WEB_USER ALL=(root) NOPASSWD: /usr/bin/apt-get update
+$WEB_USER ALL=(root) NOPASSWD: /usr/bin/apt-get install -y certbot
+$WEB_USER ALL=(root) NOPASSWD: /usr/bin/snap install certbot --classic
 EOF
 
 # Set correct permissions for sudoers file
@@ -306,7 +307,7 @@ sudo -u www-data sudo -n /usr/local/bin/crm-deploy-root 9999999 "" update-config
 echo ""
 echo "=== SETUP COMPLETE ==="
 echo ""
-echo "✓ Both www-data and crm_delivery_usr can now run:"
+echo "✓ Both www-data and $WEB_USER can now run:"
 echo "  - CRM Deploy:      sudo /usr/local/bin/crm-deploy-root <company_id> [log_id]"
 echo "  - Update Config:   sudo /usr/local/bin/crm-deploy-root <company_id> [log_id] update-config [user_id]"
 echo "  - Stop Services:   sudo /usr/local/bin/crm-deploy-root <company_id> '' stop"
