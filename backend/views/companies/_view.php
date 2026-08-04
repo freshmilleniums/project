@@ -125,7 +125,7 @@ $this->registerJs("
                                             <div class="col-md-6">
                                                 <?php if ($model->url): ?>
                                                     <?= Html::a('<i class="fas fa-external-link-alt"></i> CRM Panel',
-                                                        $model->url . '/crm-panel/',
+                                                        $model->url . '/',
                                                         ['class' => 'btn btn-sm btn-primary', 'target' => '_blank']) ?>
                                                 <?php endif; ?>
                                             </div>

@@ -462,11 +462,11 @@ server {
         fastcgi_param DOCUMENT_ROOT \$base_root/api/web;
     }
 
-    # Frontend (main site)
+    # Backend (CRM admin panel)
     location / {
-        root {$frontendPath};
+        root {$backendPath};
         index index.php;
-        try_files \$uri \$uri/ /frontend/web/index.php\$is_args\$args;
+        try_files \$uri \$uri/ /backend/web/index.php\$is_args\$args;
 
         # Static files optimization
         location ~* \\.(?:ico|css|js|gif|jpe?g|png|svg|woff2?|ttf|eot|otf|webp|mp4|mov|zip|rar|pdf)\$ {
@@ -476,29 +476,10 @@ server {
         }
 
         location = / {
-            try_files \$uri /frontend/web/index.php\$is_args\$args;
-        }
-
-        location ~ ^/assets/.+\\.php(/|\$) {
-            deny all;
-        }
-    }
-
-    # Backend (CRM admin panel)
-    location = /crm-panel {
-        return 301 /crm-panel/;
-    }
-
-    location /crm-panel/ {
-        alias {$backendPath}/;
-
-        location = /crm-panel/ {
             try_files \$uri /backend/web/index.php\$is_args\$args;
         }
 
-        try_files \$uri \$uri/ /backend/web/index.php\$is_args\$args;
-
-        location ~ ^/crm-panel/assets/.+\\.php(/|\$) {
+        location ~ ^/assets/.+\\.php(/|\$) {
             deny all;
         }
     }
@@ -819,7 +800,7 @@ require __DIR__ . '/../config/bootstrap.php';
                     '{{CORPORATE_EMAIL_DOMAIN}}' => $corporateEmailDomain,
                     '{{COMPANY_NAME}}' => addslashes($company->name),
                     '{{FRONTEND_URL}}' => "https://{$companyDomain}",
-                    '{{BACKEND_URL}}' => "https://{$companyDomain}/crm-panel",
+                    '{{BACKEND_URL}}' => "https://{$companyDomain}",
                 ];
 
                 $content = str_replace(array_keys($replacements), array_values($replacements), $content);
@@ -1653,7 +1634,7 @@ require __DIR__ . '/../config/bootstrap.php';
                 );
                 $content = preg_replace(
                     "/('backendUrl'\s*=>\s*')[^']+/",
-                    "\${1}https://{$newDomain}/crm-panel",
+                    "\${1}https://{$newDomain}",
                     $content
                 );
 
@@ -2155,11 +2136,11 @@ server {
         fastcgi_param DOCUMENT_ROOT \$base_root/api/web;
     }
 
-    # Frontend (main site)
+      # Backend (CRM admin panel)
     location / {
-        root {$frontendPath};
+        root {$backendPath};
         index index.php;
-        try_files \$uri \$uri/ /frontend/web/index.php\$is_args\$args;
+        try_files \$uri \$uri/ /backend/web/index.php\$is_args\$args;
 
         location ~* \\.(?:ico|css|js|gif|jpe?g|png|svg|woff2?|ttf|eot|otf|webp|mp4|mov|zip|rar|pdf)\$ {
             expires 6M;
@@ -2168,29 +2149,10 @@ server {
         }
 
         location = / {
-            try_files \$uri /frontend/web/index.php\$is_args\$args;
-        }
-
-        location ~ ^/assets/.+\\.php(/|\$) {
-            deny all;
-        }
-    }
-
-    # Backend (CRM admin panel)
-    location = /crm-panel {
-        return 301 /crm-panel/;
-    }
-
-    location /crm-panel/ {
-        alias {$backendPath}/;
-
-        location = /crm-panel/ {
             try_files \$uri /backend/web/index.php\$is_args\$args;
         }
 
-        try_files \$uri \$uri/ /backend/web/index.php\$is_args\$args;
-
-        location ~ ^/crm-panel/assets/.+\\.php(/|\$) {
+        location ~ ^/assets/.+\\.php(/|\$) {
             deny all;
         }
     }

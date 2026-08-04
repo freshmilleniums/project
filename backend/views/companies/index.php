@@ -536,7 +536,7 @@ function startLiveDeploymentMonitoring(companyId, deploymentType) {
     $('#deploymentStatusLive').html('<i class=\"fas fa-wifi\"></i> Connecting to real-time stream...');
     
     if (typeof(EventSource) !== \"undefined\") {        
-        const eventSource = new EventSource('/crm-panel/companies/deployment-stream?id=' + companyId);        
+        const eventSource = new EventSource('/companies/deployment-stream?id=' + companyId);        
       
         window.currentEventSource = eventSource;        
        

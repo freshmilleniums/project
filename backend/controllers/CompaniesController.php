@@ -1963,7 +1963,6 @@ class CompaniesController extends BaseController
 
                 $replacements = [
                     '{{COMPANY_ID}}' => $companyId,
-                    '{{AFTERSHIP_API_KEY}}' => 'asat_d28497cd46d840ee9d1827f5db9079ee',
                     '{{ADMIN_EMAIL}}' => "admin@{$domain}",
                     '{{SUPPORT_EMAIL}}' => "support@{$domain}",
                     '{{SENDER_EMAIL}}' => "noreply@{$domain}",
@@ -1977,7 +1976,7 @@ class CompaniesController extends BaseController
                     '{{COMPANY_DOMAIN}}' => $companyDomain,
                     '{{COMPANY_NAME}}' => addslashes($company->name),
                     '{{FRONTEND_URL}}' => "http://{$companyDomain}",
-                    '{{BACKEND_URL}}' => "http://{$companyDomain}/crm-panel",
+                    '{{BACKEND_URL}}' => "http://{$companyDomain}",
                 ];
 
                 $processedContent = str_replace(array_keys($replacements), array_values($replacements), $templateContent);

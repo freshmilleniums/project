@@ -183,7 +183,7 @@ $this->registerMetaTag(['name' => 'csrf-param', 'content' => Yii::$app->request-
                 handleTimeout();
             }, 600000);
 
-            const sseUrl = '/crm-panel/companies/deployment-stream?id=' + companyId;
+            const sseUrl = '/companies/deployment-stream?id=' + companyId;
 
             eventSource = new EventSource(sseUrl);
 
@@ -345,7 +345,7 @@ $this->registerMetaTag(['name' => 'csrf-param', 'content' => Yii::$app->request-
             } else if (!httpsUrl.startsWith('https://')) {
                 httpsUrl = 'https://' + httpsUrl;
             }
-            crmLink.href = httpsUrl + '/crm-panel';
+            crmLink.href = httpsUrl + '/';
         }
 
         document.getElementById('actionButtons').style.display = 'block';
