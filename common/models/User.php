@@ -36,6 +36,8 @@ class User extends ActiveRecord implements IdentityInterface
     private $_role;
     public $rawPassword;
 
+    private static $ignoreCompanyFilter = false;
+
     /**
      * {@inheritdoc}
      */
@@ -75,6 +77,11 @@ class User extends ActiveRecord implements IdentityInterface
             [['total_time_all'], 'integer'],
             [['total_time_all'], 'default', 'value' => 0],
         ];
+    }
+
+    public static function setIgnoreCompanyFilter(bool $value = true)
+    {
+        self::$ignoreCompanyFilter = $value;
     }
 
     /**
@@ -126,12 +133,7 @@ class User extends ActiveRecord implements IdentityInterface
     public static function find()
     {
         $query = parent::find();
-        if (\Yii::$app instanceof \yii\console\Application) {
-            return $query;
-        }
-
-        $user = \Yii::$app->user ?? null;
-        if ($user && !$user->isGuest && $user->can('super-administrator')) {
+        if (\Yii::$app instanceof \yii\console\Application || self::$ignoreCompanyFilter) {
             return $query;
         }
 

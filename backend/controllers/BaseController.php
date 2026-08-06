@@ -30,6 +30,8 @@ class BaseController extends Controller
                 throw new \yii\web\ForbiddenHttpException('Access denied.');
             }
 
+            \common\models\User::setIgnoreCompanyFilter(true);
+
             $user = Yii::$app->user->identity;
             if ($user) {
                 $user->updateAttributes(['last_activity' => time()]);

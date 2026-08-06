@@ -830,6 +830,22 @@ require __DIR__ . '/../config/bootstrap.php';
                 $this->stdout("Created params-local.php config\n");
             }
 
+            // Create empty local configs for modules not handled by init
+            $emptyLocal = "<?php\nreturn [];\n";
+            foreach (['api'] as $module) {
+                $dir = $deploymentPath . '/' . $module . '/config';
+                if (is_dir($dir)) {
+                    if (!file_exists($dir . '/main-local.php')) {
+                        file_put_contents($dir . '/main-local.php', $emptyLocal);
+                        $this->stdout("Created {$module}/config/main-local.php\n");
+                    }
+                    if (!file_exists($dir . '/params-local.php')) {
+                        file_put_contents($dir . '/params-local.php', $emptyLocal);
+                        $this->stdout("Created {$module}/config/params-local.php\n");
+                    }
+                }
+            }
+
             return true;
         } catch (\Exception $e) {
             $this->stderr("Config preparation error: {$e->getMessage()}\n");
@@ -855,6 +871,7 @@ require __DIR__ . '/../config/bootstrap.php';
                 "chmod +x {$deploymentPath}/yii",
                 "chmod 755 {$deploymentPath}/backend/web",
                 "chmod 755 {$deploymentPath}/frontend/web",
+                "chmod -R 777 {$deploymentPath}/api/runtime",
                 "chmod -R 777 {$deploymentPath}/backend/runtime",
                 "chmod -R 777 {$deploymentPath}/frontend/runtime",
                 "chmod -R 777 {$deploymentPath}/backend/web/assets",
@@ -933,7 +950,7 @@ require __DIR__ . '/../config/bootstrap.php';
             }
 
             $runtimeDirs = [
-                'backend/runtime', 'frontend/runtime', 'console/runtime',
+                'api/runtime', 'backend/runtime', 'frontend/runtime', 'console/runtime',
                 'backend/web/assets', 'frontend/web/assets'
             ];
 
