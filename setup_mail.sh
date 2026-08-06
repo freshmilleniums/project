@@ -213,24 +213,28 @@ for HOST in $IMAP_HOST $SMTP_HOST $MAIL_HOST; do
     fi
 done
 
-log "Stopping nginx temporarily for certbot..."
-systemctl stop nginx 2>/dev/null || true
+if [ -f "$CERT_PATH/fullchain.pem" ]; then
+    log "Certificate already exists at $CERT_PATH — skipping certbot"
+else
+    log "Stopping nginx temporarily for certbot..."
+    systemctl stop nginx 2>/dev/null || true
 
-log "Requesting SSL certificate..."
-certbot certonly --standalone \
-    --non-interactive \
-    --agree-tos \
-    --email "$LE_EMAIL" \
-    -d "$IMAP_HOST" \
-    -d "$SMTP_HOST" \
-    -d "$MAIL_HOST" || error "Certbot failed — check DNS records for $IMAP_HOST, $SMTP_HOST, $MAIL_HOST"
+    log "Requesting SSL certificate..."
+    certbot certonly --standalone \
+        --non-interactive \
+        --agree-tos \
+        --email "$LE_EMAIL" \
+        -d "$IMAP_HOST" \
+        -d "$SMTP_HOST" \
+        -d "$MAIL_HOST" || error "Certbot failed — check DNS records for $IMAP_HOST, $SMTP_HOST, $MAIL_HOST"
+
+    log "Starting nginx..."
+    systemctl start nginx 2>/dev/null || true
+fi
 
 log "Setting certificate permissions..."
 chown root:Debian-exim "$CERT_PATH/privkey.pem"
 chmod 640 "$CERT_PATH/privkey.pem"
-
-log "Starting nginx..."
-systemctl start nginx 2>/dev/null || true
 
 # ============================================================
 # 6. Configure Dovecot
@@ -421,6 +425,12 @@ EOF
 chmod 640 /etc/exim4/conf.d/custom.conf
 chown root:Debian-exim /etc/exim4/conf.d/custom.conf
 
+# Switch Exim to single-file config mode so exim4.conf.template is used
+sed -i "s/^CONFTYPE=.*/CONFTYPE=single/" /etc/default/exim4 2>/dev/null || true
+if ! grep -q "^CONFTYPE=" /etc/default/exim4 2>/dev/null; then
+    echo "CONFTYPE=single" >> /etc/default/exim4
+fi
+
 cat > /etc/exim4/exim4.conf.template <<EOF
 primary_hostname = $MAIL_DOMAIN
 
@@ -430,7 +440,6 @@ domainlist relay_to_domains =
 hostlist relay_from_hosts = localhost
 
 acl_smtp_rcpt = acl_check_rcpt
-acl_smtp_sender = acl_check_sender
 acl_smtp_data = acl_check_data
 
 tls_certificate = \${if exists{/etc/exim4/certs_map}\\
@@ -447,13 +456,6 @@ tls_on_connect_ports = 465
 smtp_banner = \$primary_hostname ESMTP Exim \$version_number \$tod_full
 
 begin acl
-
-acl_check_sender:
-    deny
-        authenticated = *
-        condition = \${if !eq{\$authenticated_id}{\$sender_address} {yes}{no}}
-        message = Not allowed sender for this authenticated user
-    accept
 
 acl_check_rcpt:
     accept
@@ -522,7 +524,6 @@ log "Updating Exim config..."
 update-exim4.conf
 systemctl enable exim4
 systemctl restart exim4
-
 # ============================================================
 # 10. Update params-local.php
 # ============================================================
