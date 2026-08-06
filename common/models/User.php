@@ -126,6 +126,15 @@ class User extends ActiveRecord implements IdentityInterface
     public static function find()
     {
         $query = parent::find();
+        if (\Yii::$app instanceof \yii\console\Application) {
+            return $query;
+        }
+
+        $user = \Yii::$app->user ?? null;
+        if ($user && !$user->isGuest && $user->can('super-administrator')) {
+            return $query;
+        }
+
         $companyId = \Yii::$app->params['company_id'] ?? null;
 
         // If company_id is not set or < 1, return empty query (except for admins)
