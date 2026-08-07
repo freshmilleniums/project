@@ -647,4 +647,9 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return trim($this->first_name . ' ' . $this->last_name);
     }
+
+    public function getCompany()
+    {
+        return $this->hasOne(\common\models\Companies::class, ['id' => 'company_id']);
+    }
 }
