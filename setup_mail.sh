@@ -139,6 +139,14 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y \
     openssl \
     mailutils 2>/dev/null || true
 
+# Detect PHP version and install imap extension
+PHP_VER=$(php -r 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;' 2>/dev/null || echo "8.1")
+log "Installing php${PHP_VER}-imap..."
+DEBIAN_FRONTEND=noninteractive apt-get install -y php${PHP_VER}-imap
+systemctl restart php${PHP_VER}-fpm 2>/dev/null || true
+log "php${PHP_VER}-imap installed"
+
+
 # ============================================================
 # 3. Create vmail user and directories
 # ============================================================
@@ -245,6 +253,7 @@ log "Configuring Dovecot..."
 cat > /etc/dovecot/dovecot.conf <<EOF
 protocols = imap
 listen = *, ::
+!include conf.d/*.conf
 EOF
 
 cat > /etc/dovecot/conf.d/10-auth.conf <<EOF
@@ -280,6 +289,10 @@ chown root:dovecot /etc/dovecot/dovecot-sql.conf.ext
 cat > /etc/dovecot/conf.d/10-mail.conf <<EOF
 mail_location = maildir:$MAIL_STORAGE/%d/%n
 mail_privileged_group = $VMAIL_GROUP
+
+namespace inbox {
+  inbox = yes
+}
 EOF
 
 cat > /etc/dovecot/conf.d/10-ssl.conf <<EOF
@@ -597,6 +610,7 @@ echo "  - SSL certificate: $IMAP_HOST, $SMTP_HOST, $MAIL_HOST"
 echo "  - mailbox-manager.sh: created and secured"
 echo "  - mail_users.home: empty paths fixed"
 echo "  - params-local.php: mail settings updated"
+echo "  - php-imap extension: installed"
 echo ""
 echo "  1. Check DNS records for $MAIL_DOMAIN:"
 echo "     Option A — wildcard (covers all subdomains automatically):"
