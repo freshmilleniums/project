@@ -92,6 +92,9 @@ read -p "Enter mail domain (e.g. example.com): " MAIL_DOMAIN
 read -p "Enter email for Let's Encrypt notifications: " LE_EMAIL
 [[ -z "$LE_EMAIL" ]] && error "Email cannot be empty"
 
+SERVER_HOSTNAME=$(hostname -f)
+log "Detected server hostname: $SERVER_HOSTNAME"
+
 # Derived values
 IMAP_HOST="imap.${MAIL_DOMAIN}"
 SMTP_HOST="smtp.${MAIL_DOMAIN}"
@@ -134,6 +137,7 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y \
     exim4-daemon-heavy \
     dovecot-core \
     dovecot-imapd \
+    dovecot-lmtpd \
     dovecot-mysql \
     certbot \
     openssl \
@@ -251,7 +255,7 @@ chmod 640 "$CERT_PATH/privkey.pem"
 log "Configuring Dovecot..."
 
 cat > /etc/dovecot/dovecot.conf <<EOF
-protocols = imap
+protocols = imap lmtp
 listen = *, ::
 !include conf.d/*.conf
 EOF
@@ -342,6 +346,8 @@ EOF
 
 log "Restarting Dovecot..."
 systemctl enable dovecot
+systemctl restart dovecot
+chmod 755 /var/spool/exim4/
 systemctl restart dovecot
 
 # ============================================================
@@ -445,7 +451,9 @@ if ! grep -q "^CONFTYPE=" /etc/default/exim4 2>/dev/null; then
 fi
 
 cat > /etc/exim4/exim4.conf.template <<EOF
-primary_hostname = $MAIL_DOMAIN
+hide mysql_servers = $DB_HOST/$DB_NAME/$DB_USER/$DB_PASS
+primary_hostname = $SERVER_HOSTNAME
+disable_ipv6 = true
 
 # Multi-domain: read all active domains from MySQL
 domainlist local_domains = \${lookup mysql{SELECT GROUP_CONCAT(name SEPARATOR ':') FROM mail_domains WHERE is_active=1}{\$value}{$MAIL_DOMAIN}}
@@ -455,13 +463,8 @@ hostlist relay_from_hosts = localhost
 acl_smtp_rcpt = acl_check_rcpt
 acl_smtp_data = acl_check_data
 
-tls_certificate = \${if exists{/etc/exim4/certs_map}\\
-  {\${extract{1}{:}{\${lookup{\$tls_sni}lsearch{/etc/exim4/certs_map}{\$value}{\${lookup{\${sg{\$tls_sni}{^[^.]+\\.}{*.}}lsearch{/etc/exim4/certs_map}{\$value}{/etc/exim4/ssl/exim.crt:/etc/exim4/ssl/exim.key}}}}}}}}}\\
-  {/etc/exim4/ssl/exim.crt}}
-
-tls_privatekey = \${if exists{/etc/exim4/certs_map}\\
-  {\${extract{2}{:}{\${lookup{\$tls_sni}lsearch{/etc/exim4/certs_map}{\$value}{\${lookup{\${sg{\$tls_sni}{^[^.]+\\.}{*.}}lsearch{/etc/exim4/certs_map}{\$value}{/etc/exim4/ssl/exim.crt:/etc/exim4/ssl/exim.key}}}}}}}}}\\
-  {/etc/exim4/ssl/exim.key}}
+tls_certificate = $CERT_PATH/fullchain.pem
+tls_privatekey  = $CERT_PATH/privkey.pem
 
 daemon_smtp_ports = 25 : 465 : 587
 tls_on_connect_ports = 465
@@ -473,6 +476,8 @@ begin acl
 acl_check_rcpt:
     accept
         hosts = :
+    accept
+        authenticated = *
     deny
         domains = !+local_domains
         message = relay not permitted
@@ -510,6 +515,11 @@ remote_smtp:
     message_size_limit = 0
     tls_certificate = $CERT_PATH/fullchain.pem
     tls_privatekey = $CERT_PATH/privkey.pem
+    dkim_domain = \${sender_address_domain}
+    dkim_selector = dkim
+    dkim_private_key = \${lookup{\$sender_address_domain}lsearch{/etc/exim4/dkim_keys}{\$value}{}}
+    dkim_canon = relaxed
+    dkim_strict = 0
 
 begin retry
 *   *   F,2h,15m; G,16h,1h,1.5; F,4d,6h
@@ -518,14 +528,14 @@ begin rewrite
 
 begin authenticators
 
-plain_server:
+plain:
     driver = plaintext
     server_set_id = \$auth2
     server_prompts = :
     server_condition = \${if and {{!eq{\$auth2}{}}{!eq{\$auth3}{}}{crypteq{\$auth3}{\${lookup{\$auth2}lsearch{/etc/exim4/passwd}{\${extract{1}{:}{\$value}}}{*}}}}} {yes}{no}}
     server_advertise_condition = \${if def:tls_in_cipher}
 
-login_server:
+login:
     driver = plaintext
     server_set_id = \$auth1
     server_prompts = Username:: : Password::
@@ -537,6 +547,16 @@ log "Updating Exim config..."
 update-exim4.conf
 systemctl enable exim4
 systemctl restart exim4
+
+# Init dkim_keys file
+touch /etc/exim4/dkim_keys
+if ! grep -q "^${MAIL_DOMAIN}:" /etc/exim4/dkim_keys; then
+    echo "$MAIL_DOMAIN:/etc/exim4/dkim/$MAIL_DOMAIN.private" >> /etc/exim4/dkim_keys
+fi
+
+chown root:Debian-exim /etc/exim4/dkim_keys
+chmod 640 /etc/exim4/dkim_keys
+log "dkim_keys initialized"
 # ============================================================
 # 10. Update params-local.php
 # ============================================================

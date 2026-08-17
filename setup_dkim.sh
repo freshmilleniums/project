@@ -66,6 +66,18 @@ fi
 systemctl restart exim4
 echo "✓ Exim4 restarted"
 
+# Add to dkim_keys mapping
+DKIM_KEYS_FILE="/etc/exim4/dkim_keys"
+touch "$DKIM_KEYS_FILE"
+if ! grep -q "^${DOMAIN}:" "$DKIM_KEYS_FILE" 2>/dev/null; then
+    echo "${DOMAIN}:/etc/exim4/dkim/${DOMAIN}.private" >> "$DKIM_KEYS_FILE"
+    echo "✓ dkim_keys updated"
+else
+    echo "✓ dkim_keys already has entry for ${DOMAIN}"
+fi
+chown root:Debian-exim "$DKIM_KEYS_FILE"
+chmod 640 "$DKIM_KEYS_FILE"
+
 # Get server IP
 SERVER_IP=$(hostname -I | awk '{print $1}')
 
