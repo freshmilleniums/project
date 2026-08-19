@@ -282,10 +282,9 @@ class EmailSyncController extends Controller
             }
 
             // Build corporate email address
-            $localPart = strtolower(
-                preg_replace('/[^a-z0-9]/', '', $user->first_name) . '.' .
-                preg_replace('/[^a-z0-9]/', '', $user->last_name)
-            );
+            $localPart = preg_replace('/[^a-z0-9]/', '', strtolower($user->first_name)) . '.'
+                . preg_replace('/[^a-z0-9]/', '', strtolower($user->last_name));
+
             $corporateEmail = $localPart . '@' . $domain;
 
             $tempPassword = 'Tt123456';

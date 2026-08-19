@@ -343,25 +343,78 @@ class User extends ActiveRecord implements IdentityInterface
             return null;
         }
 
-        $corporateEmail = new UserCorporateEmail();
-        $corporateEmail->user_id = $this->id;
-        $corporateEmail->email = $email;
-        $corporateEmail->plainPassword = $this->rawPassword;
-        $corporateEmail->is_active = 1;
+        $password = $this->rawPassword;
+        $salt     = bin2hex(random_bytes(8));
+        $hash     = '{SHA512-CRYPT}' . crypt($password, '$6$' . $salt);
 
-        if ($corporateEmail->save()) {
-            $this->sendCorporateEmailCredentials($email, $this->rawPassword);
-            $this->rawPassword = null;
-            return $corporateEmail;
-        } else {
+        // 1. Save to CRM DB
+        $corporateEmail                = new UserCorporateEmail();
+        $corporateEmail->user_id       = $this->id;
+        $corporateEmail->email         = $email;
+        $corporateEmail->plainPassword = $password;
+        $corporateEmail->is_active     = 1;
+
+        if (!$corporateEmail->save()) {
             Yii::error("Failed to create corporate email for user {$this->id}");
             return null;
         }
+
+        // 2. Insert into mail DB (for Dovecot)
+        try {
+            $domain    = explode('@', $email)[1];
+            $localPart = explode('@', $email)[0];
+
+            $domainId = Yii::$app->mailDb->createCommand(
+                'SELECT id FROM mail_domains WHERE name = :name',
+                [':name' => $domain]
+            )->queryScalar();
+
+            if (!$domainId) {
+                Yii::error("mail_domain not found for: {$email}");
+                return null;
+            }
+
+            Yii::$app->mailDb->createCommand()->insert('mail_users', [
+                'domain_id'  => $domainId,
+                'email'      => $email,
+                'password'   => $hash,
+                'home'       => '/var/mail/vhosts/' . $domain . '/' . $localPart,
+                'is_active'  => 1,
+                'created_at' => time(),
+            ])->execute();
+        } catch (\Exception $e) {
+            Yii::error("Failed to insert mail_user for {$email}: " . $e->getMessage());
+        }
+
+        // 3. Write to /etc/exim4/passwd (for Exim4)
+        $result = shell_exec(
+            'sudo /usr/local/bin/mailbox-manager.sh create '
+            . escapeshellarg($email) . ' '
+            . escapeshellarg($hash)
+        );
+        Yii::info("mailbox-manager create result: {$result}", 'email');
+
+        $this->sendCorporateEmailCredentials($email, $password);
+        $this->rawPassword = null;
+
+        return $corporateEmail;
     }
 
     private function generateCorporateEmailAddress()
     {
-        $domain = Yii::$app->params['corporateEmailDomain'] ?? null;
+        $domain = null;
+
+        $companyId = Yii::$app->params['company_id'] ?? null;
+        if ($companyId) {
+            $company = \common\models\Companies::findOne($companyId);
+            if ($company && !empty($company->email_domain)) {
+                $domain = $company->email_domain;
+            }
+        }
+
+        if (!$domain) {
+            $domain = Yii::$app->params['corporateEmailDomain'] ?? null;
+        }
 
         if (!$domain) {
             return null;
