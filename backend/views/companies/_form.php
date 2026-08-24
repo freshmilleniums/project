@@ -111,7 +111,7 @@ $(document).on('click', '#copy-api-key-btn', function(e) {
         'placeholder' => 'your-email@domain.com'
     ]) ?>
 
-    <?= $form->field($model, 'smtp_password')->passwordInput([
+    <?= $form->field($model, 'plainSmtpPassword')->passwordInput([
         'maxlength' => true,
         'placeholder' => 'Enter SMTP password'
     ]) ?>

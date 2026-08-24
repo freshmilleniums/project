@@ -786,7 +786,7 @@ require __DIR__ . '/../config/bootstrap.php';
 
                 $replacements = [
                     '{{COMPANY_ID}}' => $company->id,
-                    '{{EMAIL_ENCRYPTION_KEY}}' => Yii::$app->params['emailEncryptionKey'] ?? base64_encode(random_bytes(32)),
+                    '{{EMAIL_ENCRYPTION_KEY}}' => Yii::$app->params['emailEncryptionKey'] ?? '',
                     '{{ADMIN_EMAIL}}' => "admin@{$companyDomain}",
                     '{{SUPPORT_EMAIL}}' => "support@{$companyDomain}",
                     '{{SENDER_EMAIL}}' => "noreply@{$companyDomain}",

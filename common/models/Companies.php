@@ -39,6 +39,7 @@ class Companies extends \yii\db\ActiveRecord
     public $admin_email;
     public $admin_password;
     public $admin_password_confirm;
+    public $plainSmtpPassword;
 
     /**
      * {@inheritdoc}
@@ -80,6 +81,7 @@ class Companies extends \yii\db\ActiveRecord
             [['administrator_id'], 'required', 'on' => 'update'],
             // SMTP validation rules
             [['smtp_port'], 'integer', 'min' => 1, 'max' => 65535],
+            [['plainSmtpPassword'], 'string'],
             [['email_domain'], 'filter', 'filter' => function ($value) {
                 return Companies::extractDomain($value) ?? $value;
             }],
@@ -271,6 +273,26 @@ class Companies extends \yii\db\ActiveRecord
                 $this->need_config_update = self::CONFIG_UPDATE_NEEDED;
             }
         }
+        // Encrypt SMTP password if provided
+        if (!empty($this->plainSmtpPassword)) {
+            $key = Yii::$app->params['emailEncryptionKey'] ?? null;
+            if (empty($key)) {
+                $this->addError('plainSmtpPassword', 'emailEncryptionKey not configured in params.');
+                return false;
+            }
+            try {
+                $this->smtp_password = base64_encode(
+                    Yii::$app->security->encryptByPassword(
+                        $this->plainSmtpPassword,
+                        $key
+                    )
+                );
+            } catch (\Exception $e) {
+                $this->addError('plainSmtpPassword', 'Failed to encrypt password.');
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -311,5 +333,22 @@ class Companies extends \yii\db\ActiveRecord
         $domain = preg_replace('/:\d+$/', '', $domain);
 
         return $domain ?: null;
+    }
+
+    public function getDecryptedSmtpPassword()
+    {
+        $key = Yii::$app->params['emailEncryptionKey'] ?? null;
+        if (empty($key) || empty($this->smtp_password)) {
+            return null;
+        }
+        try {
+            return Yii::$app->security->decryptByPassword(
+                base64_decode($this->smtp_password),
+                $key
+            );
+        } catch (\Exception $e) {
+            Yii::error('Failed to decrypt SMTP password for company ' . $this->id . ': ' . $e->getMessage(), 'email');
+            return null;
+        }
     }
 }
