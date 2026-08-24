@@ -8,6 +8,7 @@
 /** @var array $callCenterLoad */
 /** @var array $trainingSummary */
 /** @var array $unassignedResources */
+/** @var array $hrSourceStatusCounts */
 /** @var \common\services\EmployersDashboardStatisticsService $statsService */
 
 use yii\helpers\Html;
@@ -212,6 +213,85 @@ $totalEmployees = array_sum(array_column($employeeStatusCounts, 'count'));
                     </div>
                 </div>
             <?php endforeach; ?>
+        </div>
+
+        <!-- Block 2-2: HR Source (UTM) Statistics -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="stats-table">
+                    <div class="table-header">
+                        <i class="fas fa-tag"></i> Employees by HR Source (UTM)
+                    </div>
+
+                    <!-- Desktop -->
+                    <div class="company-stats-desktop">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>HR Source</th>
+                                    <th class="text-center">Total</th>
+                                    <?php foreach (\backend\models\User::getSubstatusLabels() as $substatusLabel): ?>
+                                        <th class="text-center"><?= $substatusLabel ?></th>
+                                    <?php endforeach; ?>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php if (empty($hrSourceStatusCounts)): ?>
+                                    <tr>
+                                        <td colspan="100%" class="text-muted text-center">No data</td>
+                                    </tr>
+                                <?php else: ?>
+                                    <?php
+                                    $substatusLabels = \backend\models\User::getSubstatusLabels();
+                                    foreach ($hrSourceStatusCounts as $source => $sourceData):
+                                        ?>
+                                        <tr>
+                                            <td><strong><?= Html::encode($source) ?></strong></td>
+                                            <td class="text-center"><strong><?= $sourceData['total'] ?></strong></td>
+                                            <?php foreach ($substatusLabels as $substatusLabel): ?>
+                                                <td class="text-center"><?= $sourceData['statuses'][$substatusLabel] ?? 0 ?></td>
+                                            <?php endforeach; ?>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Mobile -->
+                    <div class="company-stats-mobile">
+                        <?php if (empty($hrSourceStatusCounts)): ?>
+                            <div class="period-stat-card">
+                                <span class="text-muted">No data</span>
+                            </div>
+                        <?php else: ?>
+                            <?php
+                            $substatusLabels = \backend\models\User::getSubstatusLabels();
+                            foreach ($hrSourceStatusCounts as $source => $sourceData):
+                                ?>
+                                <div class="admin-stat-card">
+                                    <div class="admin-stat-header"><?= Html::encode($source) ?></div>
+                                    <div class="admin-stat-subheader">Total: <strong><?= $sourceData['total'] ?></strong></div>
+                                    <div class="admin-stat-grid">
+                                        <?php foreach ($substatusLabels as $substatusLabel): ?>
+                                            <?php $substatusCount = $sourceData['statuses'][$substatusLabel] ?? 0; ?>
+                                            <?php if ($substatusCount > 0): ?>
+                                                <div class="admin-stat-item">
+                                                    <div class="admin-stat-label"><?= $substatusLabel ?></div>
+                                                    <div class="admin-stat-value"><?= $substatusCount ?></div>
+                                                </div>
+                                            <?php endif; ?>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+
+                </div>
+            </div>
         </div>
 
         <!-- Block 3: Task Statistics -->

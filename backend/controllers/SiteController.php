@@ -85,6 +85,7 @@ class SiteController extends BaseController
                 'trainingSummary'      => $stats->getTrainingProgressSummary(),
                 'unassignedResources'  => $stats->getUnassignedInvestorsAndProjects(),
                 'statsService'         => $stats,
+                'hrSourceStatusCounts' => $stats->getHrSourceStatusCounts(),
             ]);
         }
 

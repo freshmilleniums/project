@@ -487,4 +487,44 @@ class EmployersDashboardStatisticsService
             'total_employees' => (int) $totalEmployees,
         ];
     }
+
+    /**
+     * Get employee counts grouped by hr_source and substatus
+     *
+     * @param int|null $administratorId
+     * @return array [hr_source => ['total' => int, 'statuses' => [label => count]]]
+     */
+    public function getHrSourceStatusCounts(?int $administratorId = null): array
+    {
+        $query = $this->getEmployeeBaseQuery()
+            ->select([
+                'COALESCE(user.hr_source, "") AS hr_source',
+                'user.substatus',
+                'COUNT(*) AS cnt',
+            ])
+            ->groupBy(['user.hr_source', 'user.substatus'])
+            ->asArray();
+
+        $hrSourceStatusRows = $query->all();
+
+        $substatusLabels = \backend\models\User::getSubstatusLabels();
+
+        $hrSourceStatusCounts = [];
+        foreach ($hrSourceStatusRows as $hrSourceStatusRow) {
+            $source = $hrSourceStatusRow['hr_source'] !== '' ? $hrSourceStatusRow['hr_source'] : '(not specified)';
+            $label  = $substatusLabels[$hrSourceStatusRow['substatus']] ?? 'Unknown';
+
+            if (!isset($hrSourceStatusCounts[$source])) {
+                $hrSourceStatusCounts[$source] = [
+                    'total'    => 0,
+                    'statuses' => [],
+                ];
+            }
+
+            $hrSourceStatusCounts[$source]['statuses'][$label] = (int) $hrSourceStatusRow['cnt'];
+            $hrSourceStatusCounts[$source]['total']           += (int) $hrSourceStatusRow['cnt'];
+        }
+
+        return $hrSourceStatusCounts;
+    }
 }
