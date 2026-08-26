@@ -119,6 +119,12 @@ $(document).on('click', '#copy-api-key-btn', function(e) {
         'placeholder' => 'Leave empty to keep current password'
     ]) ?>
 
+    <?= $form->field($model, 'smtp_from_email')->textInput([
+        'maxlength' => true,
+        'placeholder' => 'noreply@yourdomain.com',
+    ])->hint('From address used in outgoing emails. If empty, SMTP Login is used as From address.') ?>
+
+
     <div class="form-group">
         <?= Html::button('Save', ['class' => 'btn btn-success update-company-send']) ?>
         <?= Html::button('Cancel', ['class' => 'btn btn-secondary cancel-action']) ?>

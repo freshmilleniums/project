@@ -338,6 +338,16 @@ $this->registerJs("
                                     <?php endif; ?>
                                 </td>
                             </tr>
+                            <tr>
+                                <th>From Email</th>
+                                <td>
+                                    <?php if ($model->smtp_from_email): ?>
+                                        <?= Html::encode($model->smtp_from_email) ?>
+                                    <?php else: ?>
+                                        <span class="text-muted">Not set — emails will be sent from <strong><?= Html::encode($model->smtp_login ?: '-') ?></strong></span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
                         </table>
                     </div>
 

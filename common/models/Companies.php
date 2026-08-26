@@ -19,6 +19,7 @@ use backend\models\User;
  * @property int|null $smtp_port
  * @property string|null $smtp_login
  * @property string|null $smtp_password
+ * @property string|null $smtp_from_email
  * @property int $need_config_update
  * @property string|null $previous_url
  * @property string|null $email_domain
@@ -57,7 +58,7 @@ class Companies extends \yii\db\ActiveRecord
         return [
             [['name', 'landing_url', 'landing_api_key'], 'required'],
             [['status', 'administrator_id', 'smtp_port'], 'integer'],
-            [['name', 'url', 'smtp_server', 'smtp_login', 'smtp_password'], 'string', 'max' => 255],
+            [['name', 'url', 'smtp_server', 'smtp_login', 'smtp_password', 'smtp_from_email'], 'string', 'max' => 255],
             [['landing_url'], 'string', 'max' => 255],
             [['landing_url'], 'url'],
             [['landing_api_key'], 'string', 'min' => 6, 'max' => 64],
@@ -87,6 +88,7 @@ class Companies extends \yii\db\ActiveRecord
             }],
             [['email_domain'], 'string', 'max' => 255],
             [['email_domain'], 'match', 'pattern' => '/^[a-z0-9]([a-z0-9\-]{0,61}[a-z0-9])?(\.[a-z]{2,})+$/i', 'message' => 'Enter a valid domain (e.g. mail.company.com)'],
+            [['smtp_from_email'], 'email'],
         ];
     }
 
@@ -115,6 +117,7 @@ class Companies extends \yii\db\ActiveRecord
             'need_config_update' => 'Config Update Required',
             'previous_url' => 'Previous URL',
             'email_domain' => 'Corporate Email Domain',
+            'smtp_from_email'  => 'SMTP From Email Address',
         ];
     }
 
@@ -350,5 +353,14 @@ class Companies extends \yii\db\ActiveRecord
             Yii::error('Failed to decrypt SMTP password for company ' . $this->id . ': ' . $e->getMessage(), 'email');
             return null;
         }
+    }
+
+    /**
+     * Returns the effective From email address.
+     * Uses smtp_from_email if set, falls back to smtp_login.
+     */
+    public function getSmtpFromEmail(): string
+    {
+        return !empty($this->smtp_from_email) ? $this->smtp_from_email : (string)$this->smtp_login;
     }
 }

@@ -116,6 +116,12 @@ $(document).on('click', '#copy-api-key-btn', function(e) {
         'placeholder' => 'Enter SMTP password'
     ]) ?>
 
+    <?= $form->field($model, 'smtp_from_email')->textInput([
+        'maxlength' => true,
+        'placeholder' => 'noreply@yourdomain.com',
+    ])->hint('From address used in outgoing emails. If empty, SMTP Login is used as From address.') ?>
+
+
     <hr>
 
     <h5>Administrator Account</h5>
