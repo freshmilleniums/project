@@ -15,7 +15,6 @@ use yii\behaviors\TimestampBehavior;
  * @property float|null $roi
  * @property string|null $comment
  * @property int|null $status
- * @property int|null $employee_id
  * @property int|null $created_by
  * @property int $created_at
  * @property int $updated_at
@@ -61,7 +60,7 @@ class Project extends \yii\db\ActiveRecord
     {
         return [
             [['name'], 'required'],
-            [['type', 'status', 'employee_id', 'created_by', 'created_at', 'updated_at'], 'integer'],
+            [['type', 'status', 'created_by', 'created_at', 'updated_at'], 'integer'],
             [['net_worth', 'roi'], 'number'],
             [['name'], 'string', 'max' => 255],
             [['comment'], 'string', 'max' => 5000],
@@ -83,7 +82,6 @@ class Project extends \yii\db\ActiveRecord
             'roi' => 'ROI (%)',
             'comment' => 'Comment',
             'status' => 'Status',
-            'employee_id' => 'Assigned Employee',
             'created_by' => 'Created By',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
@@ -134,15 +132,11 @@ class Project extends \yii\db\ActiveRecord
         return isset($statusList[$this->status]) ? $statusList[$this->status] : 'Unknown';
     }
 
-    /**
-     * @return string|null
-     */
-    public function getEmployeeName()
+    public static function findByEmployee(int $employeeId)
     {
-        if ($this->employee_id && $this->employee) {
-            return trim($this->employee->first_name . ' ' . $this->employee->last_name);
-        }
-        return null;
+        return static::find()
+            ->innerJoin('project_employee pe', 'pe.project_id = projects.id')
+            ->andWhere(['pe.employee_id' => $employeeId]);
     }
 
     /**
